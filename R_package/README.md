@@ -19,7 +19,7 @@ This package provides the following 5 functions:
 This package can be installed from within your R session using the package `devtools`:
 ```R
 > library(devtools)
-> install_github('prg','meeliskull')
+> install_github('meeliskull/prg/R_package/prg@devel')
 ```
 
 ### Usage
