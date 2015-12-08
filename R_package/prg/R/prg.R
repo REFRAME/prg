@@ -109,7 +109,6 @@ recall_gain = function(TP,FN,FP,TN) {
     new_point = points[i-1,,drop=FALSE] + alpha*delta
     new_point$precision_gain = 0
     new_point$recall_gain = recall_gain(new_point$TP,new_point$FN,new_point$FP,new_point$TN)
-    print(c(new_point$recall_gain,cross_x))
     new_point$is_crossing = 1
     crossings = rbind(crossings,new_point)
   }
