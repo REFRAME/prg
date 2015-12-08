@@ -1,0 +1,20 @@
+Package: prg
+Title: Creates the Precision-Recall-Gain curve and calculates the area under the curve
+Version: 0.5.0
+Authors@R: c(
+    person("Meelis", "Kull", email = "meelis.kull@gmail.com", role = c("aut", "cre")),
+    person("Peter", "Flach", email = "peter.flach@bristol.ac.uk", role = c("aut")))
+Description: Precision-Recall-Gain (PRG) curves are enhancements of the Precision-Recall (PR) curves. 
+    The benefits of PRG-curves over PR-curves are: 
+    (1) universal baselines over non-universal;
+    (2) linear interpolation over non-linear;
+    (3) linear F-isometrics over non-linear;
+    (4) convex Pareto front over non-convex;
+    (5) area-under-PRG-curve relates to expected F-gain, area-under-PR-curve does not relate to expected F-measure.
+Depends: 
+    R (>= 3.1.0)
+Imports:
+    ggplot2 (>= 1.0.0)
+License: MIT + file LICENSE
+LazyData: true
+
