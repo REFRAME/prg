@@ -18,8 +18,8 @@ This package provides the following 5 functions:
 
 This package can be installed from within your R session using the package `devtools`:
 ```R
-> library(devtools)
-> install_github('meeliskull/prg/R_package/prg@devel')
+library(devtools)
+install_github('meeliskull/prg/R_package/prg@devel')
 ```
 
 ### Usage
@@ -27,12 +27,13 @@ This package can be installed from within your R session using the package `devt
 Detailed information about the usage can be seen in the manual pages of the individual functions, e.g. by typing `?create_prg_curve`.
 The example usage is as follows:
 ```R
-> prg_curve = create_prg_curve(labels=c(1,1,0,0,1,0),pos_scores=c(0.8,0.8,0.6,0.4,0.4,0.2))
-> auprg = calc_auprg(prg_curve)
-> fig = plot_prg(prg_curve)
-> print(prg_curve)
-> print(auprg)
-> print(fig)
+library(prg)
+prg_curve = create_prg_curve(labels=c(1,1,0,0,1,0),pos_scores=c(0.8,0.8,0.6,0.4,0.4,0.2))
+auprg = calc_auprg(prg_curve)
+fig = plot_prg(prg_curve)
+print(prg_curve)
+print(auprg)
+print(fig)
 ```
 
 ### Authors
