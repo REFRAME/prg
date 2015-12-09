@@ -21,7 +21,7 @@ This package can be installed from within your R session using the package `devt
 ```R
 install.packages("devtools")  # necessary only if devtools are not installed
 library(devtools)
-install_github('meeliskull/prg/R_package/prg')
+install_github('meeliskull/prg/R_package/prg@v0.5')
 ```
 
 ### Usage
