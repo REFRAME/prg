@@ -7,18 +7,12 @@ Please see http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 
 ### Contents
 
-This package provides the following 5 functions:
+This package provides an example script and the following 5 functions:
 * `precision_gain(TP,FN,FP,TN)`
 * `recall_gain(TP,FN,FP,TN)`
 * `create_prg_curve(labels,pos_scores)`
 * `calc_auprg(prg_curve)`
 * `plot_prg(prg_curve)`
-There is an example script showing how to use these functions:
-* [View as HTML](prg/html/example.html)
-* [Script itself](prg/example.m)
-In addition, there are 2 functions for internal use:
-* `create_segments(labels,pos_scores,neg_scores)`
-* `create_crossing_points( points,n_pos,n_neg )`
 
 ### Installation
 
@@ -29,7 +23,7 @@ svn checkout https://github.com/meeliskull/prg/trunk/Matlab_package/prg
 
 ### Usage
 
-The example usage is as follows:
+The example usage in Matlab is as follows:
 ```Matlab
 %% Creating the PRG-curve
 prg_curve = create_prg_curve([1 1 0 0 1 0],[0.8 0.8 0.6 0.4 0.4 0.2])
