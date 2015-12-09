@@ -169,8 +169,8 @@ create_prg_curve = function(labels,pos_scores,neg_scores=-pos_scores,create_cros
   segments = .create.segments(labels,pos_scores,neg_scores)
   # calculate recall gains and precision gains for all thresholds
   points = data.frame(index=1:(1+nrow(segments)))
-  points$pos_score=c(-Inf,segments$pos_score)
-  points$neg_score=c(Inf,segments$neg_score)
+  points$pos_score=c(Inf,segments$pos_score)
+  points$neg_score=c(-Inf,segments$neg_score)
   points$TP = c(0,cumsum(segments$pos_count))
   points$FP = c(0,cumsum(segments$neg_count))
   points$FN = n_pos-points$TP
@@ -206,36 +206,84 @@ calc_auprg = function(prg_curve) {
   return(area)
 }
 
+#' Create the convex hull of the Precision-Recall-Gain curve
+#'
+#' This function creates the convex hull of the Precision-Recall-Gain curve resulting from the function create_prg_curve and calculates the F-calibrated scores. More information on Precision-Recall-Gain curves and how to cite this work is available at http://www.cs.bris.ac.uk/~flach/PRGcurves/.
+#' @param prg_curve the data structure resulting from the function create_prg_curve
+#' @return the data.frame representing the convex hull
+#' @examples
+#' labels = c(1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1)
+#' scores = (25:1)/25
+#' prg_convex_hull(create_prg_curve(labels,scores))
+prg_convex_hull = function(prg_curve) {
+  y = prg_curve$precision_gain
+  x = prg_curve$recall_gain
+  m = length(x)
+  y[is.na(x)] = NA
+  y_peak = max(which(y==max(y,na.rm=TRUE)),na.rm=TRUE)
+  ch = !is.na(y) & ((1:m)>=y_peak)
+  ch[(c(Inf,x[1:(m-1)])==x)] = 0
+  chi = which(ch==1)
+  while (length(chi)>=3) {
+    changed = FALSE
+    for (i in 3:length(chi)) {
+      s1 = (y[chi[i-1]]-y[chi[i-2]]) / (x[chi[i-1]]-x[chi[i-2]])
+      s2 = (y[chi[i]]-y[chi[i-1]]) / (x[chi[i]]-x[chi[i-1]])
+      if (s1<=1.00001*s2) {
+        chi = chi[-(i-1)]
+	changed = TRUE
+	break
+      }
+    }
+    if (!changed) {
+      break
+    }
+  }
+  convex_hull = prg_curve[chi,c("pos_score","neg_score","precision_gain","recall_gain")]
+  convex_hull = rbind(c(Inf,-Inf,y[y_peak],-Inf),convex_hull)
+  y = convex_hull$precision_gain
+  x = convex_hull$recall_gain
+  slopes = (c(0,y)-c(y,0))/(c(0,x)-c(x,0))
+  convex_hull$f_calibrated_score = 1/(1-slopes[1:nrow(convex_hull)])
+  return(convex_hull)
+}
+
 #' Plot the Precision-Recall-Gain curve
 #'
 #' This function plots the Precision-Recall-Gain curve resulting from the function create_prg_curve using ggplot. More information on Precision-Recall-Gain curves and how to cite this work is available at http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 #' @param prg_curve the data structure resulting from the function create_prg_curve
+#' @param show_convex_hull whether to show the convex hull (default: TRUE)
+#' @param show_f_calibrated_scores whether to show the F-calibrated scores (default:TRUE)
 #' @return the ggplot object which can be plotted using print()
 #' @details This function plots the Precision-Recall-Gain curve, indicating for each point whether it is a crossing-point or not (see help on create_prg_curve). By default, only the part of the curve within the unit square [0,1]x[0,1] is plotted.
 #' @examples
 #' labels = c(1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1)
 #' scores = (25:1)/25
 #' plot_prg(create_prg_curve(labels,scores))
-plot_prg = function(prg_curve) {
+plot_prg = function(prg_curve,show_convex_hull=TRUE,show_f_calibrated_scores=TRUE) {
   d = prg_curve
   d = d[(!is.na(d$precision_gain))&(!is.na(d$recall_gain)),]
   d2 = d
   d2$precision_gain[d2$in_unit_square==0] = NA
   d3 = d[(d$is_crossing==0)&(d$in_unit_square==1),]
   p = ggplot2::ggplot(d)
-  p = p + ggplot2::geom_segment(x=-0.01,xend=1,y=0.25,yend=0.25,color="grey",size=0.1)
-  p = p + ggplot2::geom_segment(x=-0.01,xend=1,y=0.5, yend=0.5,color="grey",size=0.1)
-  p = p + ggplot2::geom_segment(x=-0.01,xend=1,y=0.75,yend=0.75,color="grey",size=0.1)
-  p = p + ggplot2::geom_segment(y=-0.01,yend=1,x=0.25,xend=0.25,color="grey",size=0.1)
-  p = p + ggplot2::geom_segment(y=-0.01,yend=1,x=0.5, xend=0.5,color="grey",size=0.1)
-  p = p + ggplot2::geom_segment(y=-0.01,yend=1,x=0.75,xend=0.75,color="grey",size=0.1)
-  p = p + ggplot2::geom_rect(xmin=0,xmax=1,ymin=0,ymax=1,fill="transparent",color="black")
-  p = p + ggplot2::geom_line(ggplot2::aes(x=recall_gain,y=precision_gain),color="grey",size=1.5)
-  p = p + ggplot2::geom_line(data=d2,ggplot2::aes(x=recall_gain,y=precision_gain),color="black",size=1.5,na.rm=TRUE)
-  p = p + ggplot2::geom_point(data=d3,ggplot2::aes(x=recall_gain,y=precision_gain),size=3)
+  p = p + ggplot2::geom_segment(x=-0.015,xend=1,y=0.00,yend=0.00,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(x=-0.015,xend=1,y=0.25,yend=0.25,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(x=-0.015,xend=1,y=0.50,yend=0.50,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(x=-0.015,xend=1,y=0.75,yend=0.75,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(x=-0.015,xend=1,y=1.00,yend=1.00,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.015,yend=1,x=0.00,xend=0.00,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.015,yend=1,x=0.25,xend=0.25,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.015,yend=1,x=0.50,xend=0.50,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.015,yend=1,x=0.75,xend=0.75,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.015,yend=1,x=1.00,xend=1.00,color="grey",size=0.1)
+  p = p + ggplot2::geom_rect(xmin=0,xmax=1,ymin=0,ymax=1,fill="transparent",color="black",size=0.3)
+  p = p + ggplot2::geom_line(ggplot2::aes(x=recall_gain,y=precision_gain),color="lightblue",size=1.5)
+  p = p + ggplot2::geom_line(data=d2,ggplot2::aes(x=recall_gain,y=precision_gain),color="blue",size=1.5,na.rm=TRUE)
+  p = p + ggplot2::geom_point(data=d3,ggplot2::aes(x=recall_gain,y=precision_gain),color="blue",size=3)
   p = p + ggplot2::xlab("Recall Gain")
   p = p + ggplot2::ylab("Precision Gain")
-  p = p + ggplot2::coord_cartesian(xlim=c(-0.01,1.01),ylim=c(-0.01,1.01))
+  p = p + ggplot2::coord_cartesian(xlim=c(-0.015,1.015),ylim=c(-0.015,1.015))
   p = p + ggplot2::theme_bw()
   p = p + ggplot2::theme(
     panel.border = ggplot2::element_blank(),
@@ -244,6 +292,19 @@ plot_prg = function(prg_curve) {
     axis.ticks.margin = grid::unit(-0.1,"lines"),
     axis.ticks = ggplot2::element_blank()
     )
+  convex_hull = prg_convex_hull(prg_curve)
+  if (show_convex_hull) {
+    p = p + ggplot2::geom_line(data=convex_hull,ggplot2::aes(x=recall_gain,y=precision_gain),color="red",linestyle=2)
+  }
+  if (show_f_calibrated_scores) {
+    y = convex_hull$precision_gain
+    x = convex_hull$recall_gain
+    convex_hull$ya = 0.5*(y+c(0,y[1:(length(y)-1)]))
+    convex_hull$xa = 0.5*(x+c(0,x[1:(length(x)-1)]))
+    if (nrow(convex_hull)>=3) {
+      p = p + ggplot2::geom_text(data=convex_hull[3:nrow(convex_hull),],ggplot2::aes(x=xa,y=ya,label=round(f_calibrated_score,2)),color="red",hjust=0,vjust=0)
+    }
+  }
   return(p)
 }
 

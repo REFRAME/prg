@@ -7,11 +7,12 @@ Please see http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 
 ### Contents
 
-This package provides the following 5 functions:
+This package provides the following 6 functions:
 * `precision_gain(TP,FN,FP,TN)`
 * `recall_gain(TP,FN,FP,TN)`
 * `create_prg_curve(labels,pos_scores)`
 * `calc_auprg(prg_curve)`
+* `prg_convex_hull(prg_curve)`
 * `plot_prg(prg_curve)`
 
 ### Installation
@@ -33,9 +34,11 @@ labels = c(1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1)
 scores = (25:1)/25
 prg_curve = create_prg_curve(labels,scores)
 auprg = calc_auprg(prg_curve)
+convex_hull = prg_convex_hull(prg_curve)
 fig = plot_prg(prg_curve)
 print(prg_curve)
 print(auprg)
+print(convex_hull)
 print(fig)
 ```
 
