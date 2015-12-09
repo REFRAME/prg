@@ -214,7 +214,7 @@ calc_auprg = function(prg_curve) {
 #' @details This function plots the Precision-Recall-Gain curve, indicating for each point whether it is a crossing-point or not (see help on create_prg_curve). By default, only the part of the curve within the unit square [0,1]x[0,1] is plotted.
 #' @examples
 #' labels = c(1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1)
-#' scores = seq(1,0,length.out=length(labels))
+#' scores = (25:1)/25
 #' plot_prg(create_prg_curve(labels,scores))
 plot_prg = function(prg_curve) {
   d = prg_curve
