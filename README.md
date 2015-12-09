@@ -9,6 +9,9 @@ Please see http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 This software is available in the following forms:
 
 * [R-package](R_package)
+* [Matlab-package](Matlab_package)
+* Packages for Java and Python are under development
+* We are working on getting PRG-curves implemented within various existing ROC packages in different languages, please e-mail us at meelis.kull@gmail.com to suggest your favourite package
 
 ### Authors
 
