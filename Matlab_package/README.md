@@ -25,8 +25,11 @@ svn checkout https://github.com/meeliskull/prg/trunk/Matlab_package/prg
 
 The example usage in Matlab is as follows:
 ```Matlab
+%% Creating data
+labels = [1 1 1 0 1 1 1 1 1 1 0 1 1 1 0 1 0 0 1 0 0 0 1 0 1]
+scores = 1-(1:25)/25
 %% Creating the PRG-curve
-prg_curve = create_prg_curve([1 1 0 0 1 0],[0.8 0.8 0.6 0.4 0.4 0.2])
+prg_curve = create_prg_curve(labels,scores)
 %% Calculating area under the PRG-curve
 auprg = calc_auprg(prg_curve)
 %% Plotting the PRG-curve

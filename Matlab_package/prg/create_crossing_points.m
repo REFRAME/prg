@@ -25,8 +25,8 @@ x = points.recall_gain;
 y = points.precision_gain;
 f = find(([y;0].*[0;y]<0)&([1;x]>=0));
 if length(f)>0
-  for i = f
-    cross_x = x(i-1)+(-y(i-1))/(y(i)-y(i-1))*(x(i)-x(i-1))
+  for i = f'
+    cross_x = x(i-1)+(-y(i-1))/(y(i)-y(i-1))*(x(i)-x(i-1));
     delta = points(1,:);
     delta(1,:) = num2cell(points{i,:}-points{i-1,:});
     if (delta.TP>0)
