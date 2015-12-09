@@ -233,16 +233,16 @@ plot_prg = function(prg_curve) {
   p = p + ggplot2::geom_line(ggplot2::aes(x=recall_gain,y=precision_gain),color="grey",size=1.5)
   p = p + ggplot2::geom_line(data=d2,ggplot2::aes(x=recall_gain,y=precision_gain),color="black",size=1.5,na.rm=TRUE)
   p = p + ggplot2::geom_point(data=d3,ggplot2::aes(x=recall_gain,y=precision_gain),size=3)
-  p = p + xlab("Recall Gain")
-  p = p + ylab("Precision Gain")
+  p = p + ggplot2::xlab("Recall Gain")
+  p = p + ggplot2::ylab("Precision Gain")
   p = p + ggplot2::coord_cartesian(xlim=c(-0.01,1.01),ylim=c(-0.01,1.01))
   p = p + ggplot2::theme_bw()
   p = p + ggplot2::theme(
-    panel.border = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
+    panel.border = ggplot2::element_blank(),
+    panel.grid.major = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
     axis.ticks.margin = grid::unit(-0.1,"lines"),
-    axis.ticks = element_blank()
+    axis.ticks = ggplot2::element_blank()
     )
   return(p)
 }
