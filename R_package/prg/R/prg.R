@@ -1,5 +1,6 @@
 
 library(ggplot2)
+library(grid)
 
 #' Precision Gain
 #'
@@ -209,26 +210,40 @@ calc_auprg = function(prg_curve) {
 #'
 #' This function plots the Precision-Recall-Gain curve resulting from the function create_prg_curve using ggplot. More information on Precision-Recall-Gain curves and how to cite this work is available at http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 #' @param prg_curve the data structure resulting from the function create_prg_curve
-#' @param xlim the limits of the x-axis (default: c(0,1))
-#' @param ylim the limits of the y-axis (default: c(0,1))
-#' @param write_auprg write the area under the PRG-curve in the middle of the plot (write_auprg=TRUE) or not (write_auprg=FALSE, default)
-#' @return A numeric value representing the area under the Precision-Recall-Gain curve.
+#' @return the ggplot object which can be plotted using print()
 #' @details This function plots the Precision-Recall-Gain curve, indicating for each point whether it is a crossing-point or not (see help on create_prg_curve). By default, only the part of the curve within the unit square [0,1]x[0,1] is plotted.
 #' @examples
-#' plot_prg(create_prg_curve(c(1,0,1,0,1,0),c(0.8,0.8,0.6,0.4,0.4,0.2)))
-#' plot_prg(create_prg_curve(c(1,0,1,0,1,0),c(0.8,0.8,0.6,0.4,0.4,0.2)),xlim=c(-0.6,1),ylim=c(-0.6,1),write_auprg=TRUE)
-plot_prg = function(prg_curve,xlim=c(0,1),ylim=c(0,1),write_auprg=FALSE) {
+#' labels = c(1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1)
+#' scores = seq(1,0,length.out=length(labels))
+#' plot_prg(create_prg_curve(labels,scores))
+plot_prg = function(prg_curve) {
   d = prg_curve
   d = d[(!is.na(d$precision_gain))&(!is.na(d$recall_gain)),]
-  d$Axis.crossing.point = factor(d$is_crossing,levels=c(0,1),labels=c("No","Yes"))
-  d$Within.unit.square = factor(d$in_unit_square,levels=c(0,1),labels=c("No","Yes"))
+  d2 = d
+  d2$precision_gain[d2$in_unit_square==0] = NA
+  d3 = d[(d$is_crossing==0)&(d$in_unit_square==1),]
   p = ggplot2::ggplot(d)
-  p = p + ggplot2::geom_line(ggplot2::aes(x=recall_gain,y=precision_gain),color="black",size=1.5)
-  p = p + ggplot2::geom_point(ggplot2::aes(x=recall_gain,y=precision_gain,color=Within.unit.square,shape=Axis.crossing.point),size=5)
-  if (write_auprg) {
-    p = p + ggplot2::annotate("text",x=0.5,y=0.2,label=paste("AUPRG =",calc_auprg(prg_curve)))
-  }
-  p = p + ggplot2::coord_cartesian(xlim=xlim,ylim=ylim)
+  p = p + ggplot2::geom_segment(x=-0.01,xend=1,y=0.25,yend=0.25,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(x=-0.01,xend=1,y=0.5, yend=0.5,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(x=-0.01,xend=1,y=0.75,yend=0.75,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.01,yend=1,x=0.25,xend=0.25,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.01,yend=1,x=0.5, xend=0.5,color="grey",size=0.1)
+  p = p + ggplot2::geom_segment(y=-0.01,yend=1,x=0.75,xend=0.75,color="grey",size=0.1)
+  p = p + ggplot2::geom_rect(xmin=0,xmax=1,ymin=0,ymax=1,fill="transparent",color="black")
+  p = p + ggplot2::geom_line(ggplot2::aes(x=recall_gain,y=precision_gain),color="grey",size=1.5)
+  p = p + ggplot2::geom_line(data=d2,ggplot2::aes(x=recall_gain,y=precision_gain),color="black",size=1.5,na.rm=TRUE)
+  p = p + ggplot2::geom_point(data=d3,ggplot2::aes(x=recall_gain,y=precision_gain),size=3)
+  p = p + xlab("Recall Gain")
+  p = p + ylab("Precision Gain")
+  p = p + ggplot2::coord_cartesian(xlim=c(-0.01,1.01),ylim=c(-0.01,1.01))
+  p = p + ggplot2::theme_bw()
+  p = p + ggplot2::theme(
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks.margin = grid::unit(-0.1,"lines"),
+    axis.ticks = element_blank()
+    )
   return(p)
 }
 
