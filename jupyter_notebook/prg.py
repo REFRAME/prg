@@ -1,7 +1,19 @@
+#!/usr/bin/env python
+""" Software to create Precision-Recall-Gain curves.
+
+Precision-Recall-Gain curves and how to cite this work is available at
+http://www.cs.bris.ac.uk/~flach/PRGcurves/.
+"""
+
 from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
-plt.ion()
+
+__author__ = "Meelis Kull, Telmo de Menezes e Silva Filho, and Miquel Perello Nieto"
+__credits__ = ["Meelis Kull", "Telmo de Menezes e Silva Filho",
+               "Miquel Perello Nieto"]
+__maintainer__ = "Meelis Kull"
+__status__ = "Prototype"
 
 def precision(tp, tn, fp, fn):
     return tp/(tp + fp)
@@ -272,7 +284,7 @@ def plot_prg(prg_curve,show_convex_hull=True,show_f_calibrated_scores=True):
     pg = prg_curve['precision_gain']
     rg = prg_curve['recall_gain']
 
-    fig = plt.figure('plot', figsize=(6,5))
+    fig = plt.figure(figsize=(6,5))
     plt.clf()
     plt.axes(frameon=False)
     ax = fig.gca()
@@ -328,3 +340,6 @@ def test():
     plot_prg(prg_curve)
 
     plt.plot(prg_curve['recall_gain'], prg_curve_1['precision_gain'], 'bo-')
+
+if __name__ == '__main__':
+    pass
