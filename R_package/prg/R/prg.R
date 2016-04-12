@@ -294,7 +294,7 @@ plot_prg = function(prg_curve,show_convex_hull=TRUE,show_f_calibrated_scores=TRU
     )
   convex_hull = prg_convex_hull(prg_curve)
   if (show_convex_hull) {
-    p = p + ggplot2::geom_line(data=convex_hull,ggplot2::aes(x=recall_gain,y=precision_gain),color="red",linestyle=2)
+    p = p + ggplot2::geom_line(data=convex_hull,ggplot2::aes(x=recall_gain,y=precision_gain),color="red",linetype=2)
   }
   if (show_f_calibrated_scores) {
     y = convex_hull$precision_gain
