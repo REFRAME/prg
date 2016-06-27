@@ -9,14 +9,14 @@ Please see http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 This software is available in the following forms:
 
 * [R-package](R_package)
-* [Matlab-package](Matlab_package)
 * [Python-package](Python_package)
+* [Matlab-package](Matlab_package)
 * Package for Java is under development
-* We are working on getting PRG-curves implemented within various existing ROC packages in different languages, please e-mail us at meelis.kull@gmail.com to suggest your favourite package
+* We are happy to implement more forms, please e-mail us at meelis.kull@gmail.com to suggest your favourite form to be added.
 
 ### Example
 
-An example in Python is available here: [Jupyter notebook](jupyter_notebook)
+An example in Python is available here: [Jupyter notebook](jupyter_notebook/python_prg.ipynb)
 
 ### Authors
 
