@@ -11,8 +11,8 @@ except ImportError:
     read_md = lambda f: open(f, 'r').read()
 
 setup(
-    name='prg',
-    version='0.1',
+    name='pyprg',
+    version='0.1.1b1',
     description='Creates the Precision-Recall-Gain curve and calculates the area under the curve',
     long_description=read_md('README.md'),
     url='https://github.com/meeliskull/prg',
@@ -25,12 +25,13 @@ setup(
 	'Environment :: Console',
 	'Intended Audience :: Science/Research',
 	'License :: OSI Approved :: MIT License',
+	'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
 	'Topic :: Scientific/Engineering',
     ],
     keywords='classifier evaluation precision recall gain',
     packages=['prg'],
-    install_requires=['numpy','matplotlib.pyplot'],
+    install_requires=['numpy','matplotlib'],
 )
 

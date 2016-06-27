@@ -1,5 +1,5 @@
 
-# prg: R package for creating Precision-Recall-Gain curves and calculating area under the curve
+# pyprg: Python package for creating Precision-Recall-Gain curves and calculating area under the curve
 
 ### What are the Precision-Recall-Gain curves?
 
@@ -8,18 +8,20 @@ Please see http://www.cs.bris.ac.uk/~flach/PRGcurves/.
 ### Contents
 
 This package provides the following 6 functions:
-* `precision_gain(TP,FN,FP,TN)`
-* `recall_gain(TP,FN,FP,TN)`
-* `create_prg_curve(labels,pos_scores)`
-* `calc_auprg(prg_curve)`
-* `prg_convex_hull(prg_curve)`
-* `plot_prg(prg_curve)`
+```
+precision_gain(TP,FN,FP,TN)
+recall_gain(TP,FN,FP,TN)
+create_prg_curve(labels,pos_scores)
+calc_auprg(prg_curve)
+prg_convex_hull(prg_curve)
+plot_prg(prg_curve)
+```
 
 ### Installation
 
 This package can be installed using `pip` from command line:
 ```
-pip install prg
+pip install pyprg
 ```
 
 ### Usage
