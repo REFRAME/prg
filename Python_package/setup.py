@@ -3,18 +3,23 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-try:
-    from pypandoc import convert
-    read_md = lambda f: convert(f, 'rst')
-except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
-    read_md = lambda f: open(f, 'r').read()
+# try:
+#     from pypandoc import convert
+#     read_md = lambda f: convert(f, 'rst')
+# except ImportError:
+#     print("warning: pypandoc module not found, could not convert Markdown to RST")
+#     read_md = lambda f: open(f, 'r').read()
+
+with open('README.rst') as file:
+    long_description = file.read()
+
 
 setup(
     name='pyprg',
-    version='0.1.1b1',
+    version='0.1.1b2',
     description='Creates the Precision-Recall-Gain curve and calculates the area under the curve',
-    long_description=read_md('README.md'),
+#    long_description=read_md('README.md'),
+    long_description=long_description,
     url='https://github.com/meeliskull/prg',
     author='Meelis Kull, Peter Flach, Telmo de Menezes e Silva Filho, Miquel Perello Nieto',
     author_email='meelis.kull@gmail.com',
