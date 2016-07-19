@@ -1,13 +1,4 @@
-#!/usr/bin/env python
-""" Software to create Precision-Recall-Gain curves.
-
-Precision-Recall-Gain curves and how to cite this work is available at
-http://www.cs.bris.ac.uk/~flach/PRGcurves/.
-"""
-
-from __future__ import division
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np; 
 
 def precision(tp, tn, fp, fn):
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -21,7 +12,6 @@ def recall(tp, tn, fp, fn):
 
 def precision_gain(tp, fn, fp, tn):
     """Calculates Precision Gain from the contingency table
-
     This function calculates Precision Gain from the entries of the contingency
     table: number of true positives (TP), false negatives (FN), false positives
     (FP), and true negatives (TN). More information on Precision-Recall-Gain
@@ -41,13 +31,11 @@ def precision_gain(tp, fn, fp, tn):
 
 def recall_gain(tp, fn, fp, tn):
     """Calculates Recall Gain from the contingency table
-
     This function calculates Recall Gain from the entries of the contingency
     table: number of true positives (TP), false negatives (FN), false positives
     (FP), and true negatives (TN). More information on Precision-Recall-Gain
     curves and how to cite this work is available at
     http://www.cs.bris.ac.uk/~flach/PRGcurves/.
-
     Args:
         tp (float) or ([float]): True Positives
         fn (float) or ([float]): False Negatives
@@ -84,9 +72,12 @@ def create_segments(labels, pos_scores, neg_scores):
     segments = {'pos_score': np.zeros(n), 'neg_score': np.zeros(n),
                 'pos_count': np.zeros(n), 'neg_count': np.zeros(n)}
     j = -1
+    epsilon=1e-8
     for i, label in enumerate(labels):
-        if ((i == 0) or (pos_scores[i-1] != pos_scores[i])
-                     or (neg_scores[i-1] != neg_scores[i])):
+        #if ((i == 0) or (pos_scores[i-1] != pos_scores[i])
+        #             or (neg_scores[i-1] != neg_scores[i])):
+        if ((i==0) or (abs(pos_scores[i-1] - pos_scores[i])>epsilon)
+            or (abs(neg_scores[i-1]-neg_scores[i])>epsilon)): 
             j += 1
             segments['pos_score'][j] = pos_scores[i]
             segments['neg_score'][j] = neg_scores[i]
@@ -180,10 +171,6 @@ def _create_crossing_points(points, n_pos, n_neg):
 
 def create_prg_curve(labels, pos_scores, neg_scores=[],
                         create_crossing_points=True):
-    """Precision-Recall-Gain curve
-    
-    This function creates the Precision-Recall-Gain curve from the vector of labels and vector of scores where higher score indicates a higher probability to be positive. More information on Precision-Recall-Gain curves and how to cite this work is available at http://www.cs.bris.ac.uk/~flach/PRGcurves/.
-    """
     if np.alen(neg_scores) == 0:
         neg_scores = -pos_scores
     n = np.alen(labels)
@@ -223,7 +210,6 @@ def create_prg_curve(labels, pos_scores, neg_scores=[],
 
 def calc_auprg(prg_curve):
     """Calculate area under the Precision-Recall-Gain curve
-
     This function calculates the area under the Precision-Recall-Gain curve
     from the results of the function create_prg_curve. More information on
     Precision-Recall-Gain curves and how to cite this work is available at
@@ -243,7 +229,6 @@ def calc_auprg(prg_curve):
 # from 
 def convex_hull(points):
     """Computes the convex hull of a set of 2D points.
-
     Input: an iterable sequence of (x, y) pairs representing the points.
     Output: a list of vertices of the convex hull in counter-clockwise order,
       starting from the vertex with the lexicographically smallest coordinates.
@@ -275,99 +260,3 @@ def convex_hull(points):
 
     return upper
 
-
-#' Plot the Precision-Recall-Gain curve
-#'
-#' This function plots the Precision-Recall-Gain curve resulting from the function create_prg_curve using ggplot. More information on Precision-Recall-Gain curves and how to cite this work is available at http://www.cs.bris.ac.uk/~flach/PRGcurves/.
-#' @param prg_curve the data structure resulting from the function create_prg_curve
-#' @param show_convex_hull whether to show the convex hull (default: TRUE)
-#' @param show_f_calibrated_scores whether to show the F-calibrated scores (default:TRUE)
-#' @return the ggplot object which can be plotted using print()
-#' @details This function plots the Precision-Recall-Gain curve, indicating for each point whether it is a crossing-point or not (see help on create_prg_curve). By default, only the part of the curve within the unit square [0,1]x[0,1] is plotted.
-#' @examples
-#' labels = c(1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1)
-#' scores = (25:1)/25
-#' plot_prg(create_prg_curve(labels,scores))
-def plot_prg(prg_curve,show_convex_hull=True,show_f_calibrated_scores=False):
-    pg = prg_curve['precision_gain']
-    rg = prg_curve['recall_gain']
-
-    fig = plt.figure(figsize=(6,5))
-    plt.clf()
-    plt.axes(frameon=False)
-    ax = fig.gca()
-    ax.set_xticks(np.arange(0,1.25,0.25))
-    ax.set_yticks(np.arange(0,1.25,0.25))
-    ax.grid(b=True)
-    ax.set_xlim((-0.05,1.02))
-    ax.set_ylim((-0.05,1.02))
-    ax.set_aspect('equal')
-    # Plot vertical and horizontal lines crossing the 0 axis
-    plt.axvline(x=0, ymin=-0.05, ymax=1, color='k')
-    plt.axhline(y=0, xmin=-0.05, xmax=1, color='k')
-    plt.axvline(x=1, ymin=0, ymax=1, color='k')
-    plt.axhline(y=1, xmin=0, xmax=1, color='k')
-    # Plot cyan lines
-    indices = np.arange(np.argmax(prg_curve['in_unit_square']) - 1,
-                        len(prg_curve['in_unit_square']))
-    plt.plot(rg[indices], pg[indices], 'c-', linewidth=2)
-    # Plot blue lines
-    indices = np.logical_or(prg_curve['is_crossing'],
-                       prg_curve['in_unit_square'])
-    plt.plot(rg[indices], pg[indices], 'b-', linewidth=2)
-    # Plot blue dots
-    indices = np.logical_and(prg_curve['in_unit_square'],
-                             True - prg_curve['is_crossing'])
-    plt.scatter(rg[indices], pg[indices], marker='o', color='b', s=40)
-    # Plot lines out of the boundaries
-    plt.xlabel('Recall Gain')
-    plt.ylabel('Precision Gain')
-
-    valid_points = np.logical_and(True - np.isnan(rg), True - np.isnan(pg))
-    upper_hull = convex_hull(zip(rg[valid_points],pg[valid_points]))
-    rg_hull, pg_hull = zip(*upper_hull)
-    if show_convex_hull:
-        plt.plot(rg_hull, pg_hull, 'r--')
-    if show_f_calibrated_scores:
-        raise Exception("Show calibrated scores not implemented yet")
-    plt.show()
-
-
-def plot_pr(prg_curve):
-    p = prg_curve['precision']
-    r = prg_curve['recall']
-
-    fig = plt.figure(figsize=(6,5))
-    plt.clf()
-    plt.axes(frameon=False)
-    ax = fig.gca()
-    ax.set_xticks(np.arange(0,1.25,0.25))
-    ax.set_yticks(np.arange(0,1.25,0.25))
-    ax.grid(b=True)
-    ax.set_xlim((-0.05,1.02))
-    ax.set_ylim((-0.05,1.02))
-    ax.set_aspect('equal')
-    # Plot vertical and horizontal lines crossing the 0 axis
-    plt.axvline(x=0, ymin=-0.05, ymax=1, color='k')
-    plt.axhline(y=0, xmin=-0.05, xmax=1, color='k')
-    plt.axvline(x=1, ymin=0, ymax=1, color='k')
-    plt.axhline(y=1, xmin=0, xmax=1, color='k')
-    # Plot blue lines
-    plt.plot(r, p, 'ob-', linewidth=2)
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-
-    plt.show()
-
-
-def test():
-    labels = np.array([1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,1,0,1], dtype='int')
-    scores = np.around(np.log(np.arange(1,26)[::-1]),1)
-    scores = np.arange(1,26)[::-1]
-    prg_curve = create_prg_curve(labels, scores, create_crossing_points=True)
-    auprg = calc_auprg(prg_curve)
-    plot_prg(prg_curve)
-
-
-if __name__ == '__main__':
-    pass
